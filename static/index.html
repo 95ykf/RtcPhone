@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>鸿联九五-呼叫中心-电话条</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+    <!-- 浏览器兼容适配 -->
+    <!--<script src="https://cdn.bootcss.com/babel-polyfill/7.0.0/polyfill.js"></script>-->
+
+    <style type="text/css">
+        body, textarea, input, option {
+            font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 13px;
+            overflow-x: hidden;
+        }
+
+        body, div, h1, h2, h3, h4, h5, h6, p, dl, dd, ul, ol, textarea, input, select, form, em, strong, a, span {
+            margin: 0;
+        }
+
+        /* top */
+        .top {
+            width: 100%;
+            height: 50px;
+            border-bottom: 1px solid #ccc;
+            background: #f3f3f4;
+        }
+
+        .logocon {
+            float: left;
+            width: 200px;
+            height: 50px;
+            line-height: 50px;
+            background: url(./images/logo.png) no-repeat center;
+            background-size: 100% 100%;
+            -moz-background-size: 100% 100%;
+        }
+
+        /* endtop */
+
+        .logBox {
+            border: 1px solid #ccc;
+            height: 280px;
+            overflow: auto;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        fieldset>div {
+            margin: 3px 0;
+        }
+        .form-label {
+            display: inline-block;
+            width: 120px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="top">
+    <div class="logocon"></div>
+    <div id="test1" style="display: inline;"></div>
+    <div id="test2" style="display: inline;float: right;"></div>
+    <div id="test3" style="display: inline;float: right;position: fixed;right: 0;bottom: 0;"></div>
+    <div id="test4" style="display: inline;float: left;position: fixed;left: 0;bottom: 0;"></div>
+</div>
+<div style="padding: 10px;">
+    <!-- 坐席配置 -->
+    <div id="agentConfig">
+        <form>
+            <fieldset>
+                <legend>服务器/客户端设置</legend>
+                <div>
+                    <span class="form-label"><label for="displayName">displayName</label></span><input type="text" id="displayName" name="displayName" value="" size="30" ><br/>
+                    <span class="form-label"><label for="privateIdentity">privateIdentity</label></span><input type="text" id="privateIdentity" name="privateIdentity" value="" size="30" ><br/>
+                    <span class="form-label"><label for="publicIdentity">publicIdentity</label></span><input type="text" id="publicIdentity" name="publicIdentity" value="" size="30" ><br/>
+                    <span class="form-label"><label for="realm">realm</label></span><input type="text" id="realm" name="realm" value="" size="30" ><br/>
+                    <span class="form-label"><label for="password">密码</label></span><input type="password" id="password" name="password" value="" size="30"><br/>
+                    <span class="form-label"><label for="websocketProxyUrl">websocket代理地址</label></span><input type="text" id="websocketProxyUrl" name="websocketProxyUrl" value="" size="30">
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>操作</legend>
+                状态：<span id="phoneStatus"></span>
+                <br/>
+
+                <input id="initBtn" onclick="initRtcPhone();" type="button" value=" 初始化 "/>
+                <input id="registerBtn" onclick="login();" type="button" value=" 注册 " style="display: none;"/>
+                <input id="unRegisterBtn" onclick="rtcPhone.sipUnRegister();" type="button" value=" 取消注册 " style="display: none;"/>
+                <input onclick="emptyLog();" type="button" value=" 清空日志 "/>
+                <br/>
+                
+                <span class="form-label"><label for="phoneNumber">呼叫号码</label></span><input type="text" id="phoneNumber" name="phoneNumber" value="" size="30" maxlength="30">
+                <input id="audioMakeCallBtn" onclick="audioMakeCall();" type="button" value=" 语音呼叫 " disabled="true"/>
+                <input id="audioVideoMakeCallBtn" onclick="audioVideoMakeCall();" type="button" value=" 视频呼叫 " disabled="true"/>
+                <input id="answerBtn" onclick="rtcPhone.sipAnswer();" type="button" value=" 接听 " disabled="true"/>
+                <input id="holdResumeBtn" onclick="rtcPhone.sipToggleHoldResume();" type="button" value=" 保持 " disabled="true"/>
+                <input id="hangupBtn" onclick="rtcPhone.sipHangup();" type="button" value=" 挂机 " disabled="true"/>
+                <br/>
+
+                <span class="form-label"><label for="transferPhoneNumber">转接号码</label></span><input type="text" id="transferPhoneNumber" name="transferPhoneNumber" value="" size="30" maxlength="30">
+                <input id="transferCallBtn" onclick="transferCall();" type="button" value=" 转接 " disabled="true"/>
+                <br/>
+
+                <span class="form-label"><label for="digitTxt">二次拨号号码</label></span><input type="text" id="digitTxt" name="digitTxt" value="" size="30" maxlength="30">
+                <input id="dtmfBtn" onclick="sendDTMF();" type="button" value=" 二次拨号 " disabled="true"/><br/>
+                
+            </fieldset>
+        </form>
+    </div>
+
+    <audio id="audio_remote" autoplay="autoplay"></audio>
+    <audio id="ringtone" loop="" src="./sounds/ringtone.wav"></audio>
+    <audio id="ringbacktone" loop="" src="./sounds/ringbacktone.wav"></audio>
+    <audio id="dtmfTone" src="./sounds/dtmf.wav"></audio>
+
+    <video class="video" id="video_remote" autoplay="autoplay" style="" muted=""></video>
+    <video class="video" id="video_local" autoplay="autoplay" style="" muted="true" ></video>
+
+    <!-- 日志 -->
+    <div id="log" class="logBox"></div>
+</div>
+
+<script src="https://cdn.bootcss.com/moment.js/2.22.1/moment.min.js"></script>
+<script src="https://cdn.bootcss.com/moment.js/2.22.1/locale/zh-cn.js"></script>
+
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+<link href="https://cdn.bootcss.com/layer/2.3/skin/layer.css" rel="stylesheet">
+<script src="https://cdn.bootcss.com/layer/2.3/layer.js"></script>
+
+<script src="./js/SIPml-api.js"></script>
+
+<!-- 新版sdk -->
+<script>
+    // 电话条
+    var rtcPhone = null;
+
+    function initRtcPhone() {
+        if (rtcPhone) {
+            return;
+        }
+        
+        rtcPhone = new RtcPhone({
+            ringToneDom: 'ringtone',
+            ringbackToneDom: 'ringbacktone',
+
+            audioRemoteDom: 'audio_remote',
+            videoLocalDom: 'video_local',
+            videoRemoteDom: 'video_remote',
+
+            onInitialized: onInitialized,
+            onConnected: onConnected,
+            onDisconnected: onDisconnected,
+            onRinging: onRinging,
+            onDialing: onDialing,
+            onTalking: onTalking,
+            onReleased: onReleased,
+        });
+
+        rtcPhone.sipInit();
+        rtcPhone.on('holdSuccess', onHoldCompleted);
+        rtcPhone.on('resumeCompleted', onResumeCompleted);
+        rtcPhone.on('transferCompleted', onTransferCompleted);
+        rtcPhone.on('transferFailed', onTransferFailed);
+
+        document.getElementById('initBtn').style.display = 'none';
+        document.getElementById('registerBtn').style.display = 'inline';
+    }
+
+    function login() {
+        rtcPhone.sipRegister({
+            displayName: document.getElementById('displayName').value,
+            privateIdentity: document.getElementById('privateIdentity').value,
+            publicIdentity: document.getElementById('publicIdentity').value,
+            password: document.getElementById('password').value,
+            realm: document.getElementById('realm').value,
+            websocketProxyUrl: document.getElementById('websocketProxyUrl').value,
+        });
+    }
+
+    function onInitialized(e) {
+        console.log('initialized', e);
+        document.getElementById('phoneStatus').innerHTML='initialized';
+    }
+
+    function onConnected(e) {
+        console.log('connected', e);
+        document.getElementById('phoneStatus').innerHTML='registered';
+        document.getElementById('registerBtn').style.display = 'none';
+        document.getElementById('unRegisterBtn').style.display = 'inline';
+        document.getElementById('audioMakeCallBtn').disabled = false;
+        document.getElementById('audioVideoMakeCallBtn').disabled = false;
+    }
+
+    function onDisconnected(e) {
+        console.log('disconnected', e);
+        document.getElementById('phoneStatus').innerHTML='disconnected';
+        document.getElementById('registerBtn').style.display = 'inline';
+        document.getElementById('unRegisterBtn').style.display = 'none';
+        document.getElementById('audioMakeCallBtn').disabled = true;
+        document.getElementById('audioVideoMakeCallBtn').disabled = true;
+    }
+
+    function onRinging(phoneNumber) {
+        console.log('ringing', phoneNumber);
+        document.getElementById('phoneStatus').innerHTML = 'Incoming call from' + phoneNumber;
+        document.getElementById('audioMakeCallBtn').disabled = true;
+        document.getElementById('audioVideoMakeCallBtn').disabled = true;
+        document.getElementById('answerBtn').disabled = false;
+        document.getElementById('hangupBtn').disabled = false;
+    }
+
+    function onDialing(e) {
+        console.log('dialing', e);
+        document.getElementById('phoneStatus').innerHTML='Call in progress...';
+        document.getElementById('audioMakeCallBtn').disabled = true;
+        document.getElementById('audioVideoMakeCallBtn').disabled = true;
+        document.getElementById('hangupBtn').disabled = false;
+    }
+    
+    function onTalking(e) {
+        console.log('talking', e);
+        document.getElementById('phoneStatus').innerHTML='talking';
+        document.getElementById('answerBtn').disabled = true;
+        document.getElementById('holdResumeBtn').disabled = false;
+        document.getElementById('transferCallBtn').disabled = false;
+        document.getElementById('dtmfBtn').disabled = false;
+    }
+    
+    function onReleased(e) {
+        console.log('released', e);
+        document.getElementById('phoneStatus').innerHTML = rtcPhone.status;
+        document.getElementById('audioMakeCallBtn').disabled = false;
+        document.getElementById('audioVideoMakeCallBtn').disabled = false;
+        document.getElementById('answerBtn').disabled = true;
+        document.getElementById('hangupBtn').disabled = true;
+        document.getElementById('holdResumeBtn').disabled = true;
+        document.getElementById('transferCallBtn').disabled = true;
+        document.getElementById('dtmfBtn').disabled = true;
+    }
+
+    function onHoldCompleted(e) {
+        console.log('HoldSuccess', e);
+        document.getElementById('holdResumeBtn').value = ' 取回 ';
+    }
+
+    function onResumeCompleted(e) {
+        console.log('ResumeSuccess', e);
+        document.getElementById('holdResumeBtn').value = ' 保持 ';
+    }
+
+    function onTransferCompleted(e) {
+        console.log('TransferCompleted', e);
+        document.getElementById('transferCallBtn').disabled = false;
+    }
+
+    function onTransferFailed(e) {
+        console.log('TransferFailed', e);
+        document.getElementById('transferCallBtn').disabled = false;
+    }
+
+    function audioMakeCall() {
+        var phoneNumber = document.getElementById('phoneNumber').value;
+        rtcPhone.sipCall('call-audio', phoneNumber);
+    }
+
+    function audioVideoMakeCall() {
+        var phoneNumber = document.getElementById('phoneNumber').value;
+        rtcPhone.sipCall('call-audiovideo', phoneNumber);
+    }
+
+    function audioVideoMakeCall() {
+        var phoneNumber = document.getElementById('phoneNumber').value;
+        rtcPhone.sipCall('call-audiovideo', phoneNumber);
+    }
+
+    function transferCall(phoneNumber) {
+        var phoneNumber = document.getElementById('transferPhoneNumber').value;
+        document.getElementById('transferCallBtn').disabled = true;
+        var ret = rtcPhone.sipTransfer(phoneNumber);
+        if (!ret) {
+            document.getElementById('transferCallBtn').disabled = false;
+        }        
+    }
+
+    function sendDTMF() {
+        if (rtcPhone) {
+            var digit = $("#digitTxt").val();
+            if (digit && /^[0-9*#]+$/.test(digit)) {
+                rtcPhone.sipSendDTMF(digit);
+            } else {
+                showMessage('二次拨号仅允许输入0-9,*,#');
+            }
+        } else {
+            showMessage('话机未初始化！')
+        }
+    }
+
+    $(function () {
+        // init();
+    });
+</script>
+
+<script type="text/javascript">
+    function printLog(content, msgType) {
+        var oTextareaInfo = document.getElementById("log");
+        if (oTextareaInfo != null) {
+            oTextareaInfo.innerHTML = oTextareaInfo.innerHTML
+                    + '<div class="newmessage" style="font-size:12px;"><span style="color:red">'
+                    + content
+                    + '</span></div>'
+                    + " \r\n";
+            if ($('#log')[0].scrollHeight > $('#log')[0].clientHeight) {
+                $('#log')[0].scrollTop = $('#log')[0].scrollHeight - $('#log')[0].clientHeight;
+            }
+        }
+    }
+
+    function emptyLog() {
+        var oTextareaInfo = document.getElementById("log");
+        if (oTextareaInfo != null)
+            oTextareaInfo.innerHTML = "";
+    }
+
+    RtcPhone.Log.log = printLog;
+    RtcPhone.Log.info = printLog;
+    RtcPhone.Log.error = printLog;
+
+    var showMessage = RtcPhone.utils.showMessage = function (msg) {
+        layer.alert(msg, {icon: 7});
+    }
+</script>
+</body>
+</html>
