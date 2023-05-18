@@ -16,7 +16,8 @@ module.exports = merge(baseWebpackConfig, {
         host : "0.0.0.0", //设置0.0.0.0使得可以通过本机ip访问项目
         port: 8088,
         historyApiFallback: true,
-        inline:true
+        inline:true,
+        https: true,
     },
     watchOptions: {
         ignored: /node_modules/, //忽略不用监听变更的目录
