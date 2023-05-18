@@ -47,7 +47,10 @@ class RtcPhone extends EventEmitter {
     Log.info(`RtcPhone Constructor:location=${window.location}`);
 
     // set debug level
+    this.debugLevel = debugLevel;
     SIPml.setDebugLevel(this.debugLevel);
+    //
+    this.webRtcType = webRtcType;
     // 
     this.pfs = pfs;
     this.maxVideoSize = maxVideoSize;
@@ -300,7 +303,7 @@ class RtcPhone extends EventEmitter {
             )
           : null, // could be redefined a session-level
         sip_headers: [
-          { name: "User-Agent", value: "HLCC-WebRTC-Client/1.0" },
+          { name: "User-Agent", value: "HL-WebRTC" },
           { name: "Organization", value: "HL95" },
         ],
       });
