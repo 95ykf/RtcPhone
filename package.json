@@ -7,37 +7,33 @@
     "WebRTC"
   ],
   "scripts": {
-    "dev": "webpack-dev-server --open --config build/webpack.dev.conf.js --mode development",
-    "start": "npm run dev",
-    "build": "webpack --config ./build/webpack.base.conf.js --progress --colors",
-    "build:dev": "webpack --progress --colors --config ./build/webpack.dev.conf.js --mode development ",
-    "build:prod": "webpack --progress --colors --config ./build/webpack.prod.conf.js --mode production",
+    "dev": "webpack serve --config build/webpack.dev.conf.js --mode development",
+    "build": "webpack --config ./build/webpack.base.conf.js --progress",
+    "build:dev": "set NODE_OPTIONS=--openssl-legacy-provider && webpack --progress --config ./build/webpack.dev.conf.js --mode development ",
+    "build:prod": "set NODE_OPTIONS=--openssl-legacy-provider && webpack --progress --config ./build/webpack.prod.conf.js --mode production",
     "analyz": "cross-env npm_config_report=true npm run build:prod",
     "jsdoc": "jsdoc -c .jsdoc.json --package ./package.json -d ./doc/jsdoc -r"
   },
   "author": "zhangsx@9500.cn",
   "dependencies": {
-    "eventemitter3": "^3.1.0"
+    "eventemitter3": "^5.0.1"
   },
   "devDependencies": {
-    "autoprefixer": "^9.2.0",
-    "clean-webpack-plugin": "^0.1.19",
-    "copy-webpack-plugin": "^4.6.0",
-    "cross-env": "^5.2.0",
-    "css-hot-loader": "^1.4.2",
-    "css-loader": "^1.0.0",
-    "file-loader": "^2.0.0",
-    "html-webpack-plugin": "^3.2.0",
-    "jsdoc": "^3.5.5",
-    "mini-css-extract-plugin": "^0.4.4",
-    "optimize-css-assets-webpack-plugin": "^5.0.1",
-    "postcss-loader": "^3.0.0",
-    "url-loader": "^1.1.2",
-    "webpack": "^4.23.1",
-    "webpack-bundle-analyzer": "^3.0.3",
-    "webpack-cli": "^3.1.2",
-    "webpack-dev-server": "^3.1.11",
-    "webpack-merge": "^4.1.4"
+    "autoprefixer": "^10.4.19",
+    "copy-webpack-plugin": "^12.0.2",
+    "cross-env": "^7.0.3",
+    "css-hot-loader": "^1.4.4",
+    "css-loader": "^7.1.2",
+    "postcss-loader": "^8.1.1",
+    "css-minimizer-webpack-plugin": "^7.0.0",
+    "html-webpack-plugin": "^5.6.0",
+    "jsdoc": "^4.0.3",
+    "mini-css-extract-plugin": "^2.9.0",
+    "webpack": "^5.92.1",
+    "webpack-bundle-analyzer": "^4.10.2",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.0.4",
+    "webpack-merge": "^5.10.0"
   },
   "browserslist": [
     "> 1%",

@@ -1,9 +1,8 @@
 'use strict';
 const baseWebpackConfig = require('./webpack.base.conf');
-const merge = require('webpack-merge');
+const {merge} = require('webpack-merge');
 const path = require('path');
 
-const CleanWebpackPlugin = require('clean-webpack-plugin'); // 清空打包目录的插件
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = merge(baseWebpackConfig, {
@@ -12,12 +11,16 @@ module.exports = merge(baseWebpackConfig, {
     },
     devtool: 'source-map',
     devServer: {
-        contentBase: path.resolve(__dirname, '../static'),
-        host : "0.0.0.0", //设置0.0.0.0使得可以通过本机ip访问项目
+        hot: true, // 模块热加载
+        server: 'https',
+        host: '0.0.0.0',
         port: 8088,
-        historyApiFallback: true,
-        inline:true,
-        https: true,
+        client: {
+            overlay: false, // 编译错误时，取消全屏覆盖（建议关掉）
+        },
+        static: {
+            directory: path.join(__dirname, '../dist'),
+        },
     },
     watchOptions: {
         ignored: /node_modules/, //忽略不用监听变更的目录
@@ -25,16 +28,16 @@ module.exports = merge(baseWebpackConfig, {
         poll:1000 //每秒询问的文件变更的次数
     },
     plugins: [
-        new CleanWebpackPlugin(['dist'], {
-            root: path.resolve(__dirname, '../'),
-            verbose: true,
-            dry:  false
+        new CopyWebpackPlugin({
+            patterns: [
+                { 
+                    from: path.resolve(__dirname, '../static'),
+                    globOptions: {
+                        gitignore: true,
+                        ignore: ['**/index.html'],
+                    },
+                },
+            ],
         }),
-        new CopyWebpackPlugin([
-          {
-            from: path.resolve(__dirname, '../static'),
-            // to: config.build.assetsSubDirectory,
-          }
-        ])
     ]
 });

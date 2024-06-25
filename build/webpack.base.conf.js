@@ -14,8 +14,10 @@ module.exports = {
         filename: 'js/[name].js',
         library: '[name]',
         libraryExport: 'default',
-        libraryTarget: 'umd'
+        libraryTarget: 'umd',
+        clean: true,
     },
+    target: 'web',
     module: {
         rules: [
             {
@@ -35,29 +37,42 @@ module.exports = {
             },
             {
                 test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
-                loader: 'url-loader',
-                options: {
-                    limit: 10000,
-                    name: 'images/[name].[ext]',
+                type: 'asset',
+                parser: {
+                    dataUrlCondition: {
+                      maxSize: 1024 * 15,
+                    }
+                },
+                generator: {
                     publicPath: '../',
+                    filename: 'images/[name]_[hash:6].[ext]',
                 }
             },
             {
                 test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
-                loader: 'url-loader',
-                options: {
-                    limit: 10000,
-                    name: 'media/[name].[ext]',
+                type: 'asset',
+                parser: {
+                    dataUrlCondition: {
+                      maxSize: 1024 * 15,
+                    }
+                },
+                generator: {
                     publicPath: '../',
+                    filename: 'media/[name]_[hash:6].[ext]',
                 }
             },
             {
                 test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
-                loader: 'url-loader',
-                options: {
-                    limit: 10000,
-                    name: 'fonts/[name].[ext]',
+                type: 'asset/resource',
+                exclude: /node_modules/,
+                parser: {
+                    dataUrlCondition: {
+                      maxSize: 1024 * 20,
+                    }
+                },
+                generator: {
                     publicPath: '../',
+                    filename: 'fonts/[name]_[hash:6].[ext]',
                 }
             }
         ]
@@ -66,7 +81,8 @@ module.exports = {
         new htmlWebpackPlugin({
             filename: 'index.html',
             template: path.resolve(__dirname, '../static/index.html'),
-            inject: 'head'
+            inject: 'head',
+            minify: false,
         }),
         new MiniCssExtractPlugin({
             filename: "css/[name].css",
