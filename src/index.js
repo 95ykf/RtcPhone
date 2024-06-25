@@ -23,12 +23,12 @@ class RtcPhone extends EventEmitter {
     zeroArtifacts,
     startNativeDebug = false,
 
-    ringToneDom,
-    ringbackToneDom,
+    ringToneDom = null,
+    ringbackToneDom = null,
 
     audioRemoteDom,
-    videoLocalDom,
-    videoRemoteDom,
+    videoLocalDom = null,
+    videoRemoteDom = null,
 
     onInitialized,
     onStackStartFailed,
@@ -60,25 +60,34 @@ class RtcPhone extends EventEmitter {
     this.startNativeDebug = startNativeDebug;
     
     // check dom
-    this.ringTone = document.getElementById(ringToneDom);
-    if (!this.ringTone) {
-      throw "Ringtone dom does not exist !";
+    if (ringToneDom && !(ringToneDom instanceof HTMLAudioElement)) {
+      throw new Error(`Parameter 'ringToneDom' not found or not an audio element.`);
+    } else {
+      this.ringTone = ringToneDom;
     }
-    this.ringbackTone = document.getElementById(ringbackToneDom);
-    if (!this.ringbackTone) {
-      throw "RingbackTone dom does not exist !";
+
+    if (ringbackToneDom && !(ringbackToneDom instanceof HTMLAudioElement)) {
+      throw new Error(`Parameter 'ringbackToneDom' not found or not an audio element.`);
+    } else {
+      this.ringbackTone = ringbackToneDom;
     }
-    this.audioRemote = document.getElementById(audioRemoteDom);
-    if (!this.audioRemote) {
-      throw "Audio dom does not exist !";
+
+    if (!(audioRemoteDom instanceof HTMLAudioElement)) {
+      throw new Error(`Parameter 'audioRemoteDom' not found or not an audio element.`);
+    } else {
+      this.audioRemote = audioRemoteDom;
     }
-    this.videoLocal = document.getElementById(videoLocalDom);
-    if (!this.videoLocal) {
-      throw "Local video dom does not exist !";
+
+    if (videoLocalDom && !(videoLocalDom instanceof HTMLVideoElement)) {
+      throw new Error(`Parameter 'videoLocalDom' not found or not an video element.`);
+    } else {
+      this.videoLocal = videoLocalDom;
     }
-    this.videoRemote = document.getElementById(videoRemoteDom);
-    if (!this.videoRemote) {
-      throw "Remote video dom does not exist !";
+
+    if (videoRemoteDom && !(videoRemoteDom instanceof HTMLVideoElement)) {
+      throw new Error(`Parameter 'videoRemoteDom' not found or not an video element.`);
+    } else {
+      this.videoRemote = videoRemoteDom;
     }
 
     this.configCall = {
@@ -500,13 +509,17 @@ class RtcPhone extends EventEmitter {
    */
   startRingTone() {
     try {
-      ringtone.play();
+      if (ringtone) {
+        ringtone.play();
+      }
     } catch (e) {}
   }
 
   stopRingTone() {
     try {
-      ringtone.pause();
+      if (ringtone) {
+        ringtone.pause();
+      }
     } catch (e) {}
   }
 
@@ -515,13 +528,17 @@ class RtcPhone extends EventEmitter {
    */
   startRingbackTone() {
     try {
-      ringbacktone.play();
+      if (ringbacktone) {
+        ringbacktone.play();
+      }      
     } catch (e) {}
   }
 
   stopRingbackTone() {
     try {
-      ringbacktone.pause();
+      if (ringbacktone) {
+        ringbacktone.pause();
+      }
     } catch (e) {}
   }
 
@@ -704,7 +721,7 @@ class RtcPhone extends EventEmitter {
             this.callStatus = "dialing";
 
             // FIXME: 使用对方铃声，呼叫开始阶段会有一段没有铃声
-            // this.startRingbackTone();
+            this.startRingbackTone();
 
             this.emit("dialing", e);
             Log.info("Remote ringing...");

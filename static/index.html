@@ -141,12 +141,12 @@
         }
         
         rtcPhone = new RtcPhone({
-            ringToneDom: 'ringtone',
-            ringbackToneDom: 'ringbacktone',
+            // ringToneDom: document.getElementById('ringtone'),
+            // ringbackToneDom: document.getElementById('ringbacktone'),
 
-            audioRemoteDom: 'audio_remote',
-            videoLocalDom: 'video_local',
-            videoRemoteDom: 'video_remote',
+            audioRemoteDom: document.getElementById('audio_remote'),
+            // videoLocalDom: document.getElementById('video_local'),
+            // videoRemoteDom: document.getElementById('video_remote'),
 
             onInitialized: onInitialized,
             onConnected: onConnected,
