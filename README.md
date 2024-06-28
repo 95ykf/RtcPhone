@@ -14,13 +14,12 @@ WebRTC话机SDK是一个在浏览器内使用的内置话机，可以在移动�
 1. 创建组件时需要铃音DOM位置、本地video DOM、远程video DOM、audio语音组件DOM自定义事件回调等。如下示例：
 ```javascript
 rtcPhone = new RtcPhone({
-    ringToneDom: 'ringtone',
-    ringbackToneDom: 'ringbacktone',
+    ringToneDom: document.getElementById('ringtone'),
+    ringbackToneDom: document.getElementById('ringbacktone'),
 
-    audioRemoteDom: 'audio_remote',
-    videoLocalDom: 'video_local',
-    videoRemoteDom: 'video_remote',
-
+    audioRemoteDom: document.getElementById('audio_remote'),
+    videoLocalDom: document.getElementById('video_local'),
+    videoRemoteDom: document.getElementById('video_remote'),
     onInitialized: onInitialized,
     onConnected: onConnected,
     onDisconnected: onDisconnected,
