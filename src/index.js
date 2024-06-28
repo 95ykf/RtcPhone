@@ -323,6 +323,7 @@ class RtcPhone extends EventEmitter {
       }
     } catch (e) {
       this.emit("stackStartFailed", e);
+      Log.error(e)
     }
   }
 
@@ -512,7 +513,9 @@ class RtcPhone extends EventEmitter {
       if (ringtone) {
         ringtone.play();
       }
-    } catch (e) {}
+    } catch (e) {
+      Log.error("铃声播放失败", e)
+    }
   }
 
   stopRingTone() {
@@ -520,7 +523,9 @@ class RtcPhone extends EventEmitter {
       if (ringtone) {
         ringtone.pause();
       }
-    } catch (e) {}
+    } catch (e) {
+      Log.error("停止铃声播放失败", e)
+    }
   }
 
   /**
@@ -531,7 +536,9 @@ class RtcPhone extends EventEmitter {
       if (ringbacktone) {
         ringbacktone.play();
       }      
-    } catch (e) {}
+    } catch (e) {
+      Log.error("播放回铃音失败", e)
+    }
   }
 
   stopRingbackTone() {
@@ -539,7 +546,9 @@ class RtcPhone extends EventEmitter {
       if (ringbacktone) {
         ringbacktone.pause();
       }
-    } catch (e) {}
+    } catch (e) {
+      Log.error("停止播放回铃音失败", e)
+    }
   }
 
   // Callback function for SIP Stacks
