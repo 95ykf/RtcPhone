@@ -510,8 +510,8 @@ class RtcPhone extends EventEmitter {
    */
   startRingTone() {
     try {
-      if (ringtone) {
-        ringtone.play();
+      if (this.ringTone) {
+        this.ringTone.play();
       }
     } catch (e) {
       Log.error("铃声播放失败", e)
@@ -520,8 +520,8 @@ class RtcPhone extends EventEmitter {
 
   stopRingTone() {
     try {
-      if (ringtone) {
-        ringtone.pause();
+      if (this.ringTone) {
+        this.ringTone.pause();
       }
     } catch (e) {
       Log.error("停止铃声播放失败", e)
@@ -533,8 +533,8 @@ class RtcPhone extends EventEmitter {
    */
   startRingbackTone() {
     try {
-      if (ringbacktone) {
-        ringbacktone.play();
+      if (this.ringbackTone) {
+        this.ringbackTone.play();
       }      
     } catch (e) {
       Log.error("播放回铃音失败", e)
@@ -543,8 +543,8 @@ class RtcPhone extends EventEmitter {
 
   stopRingbackTone() {
     try {
-      if (ringbacktone) {
-        ringbacktone.pause();
+      if (this.ringbackTone) {
+        this.ringbackTone.pause();
       }
     } catch (e) {
       Log.error("停止播放回铃音失败", e)
@@ -553,7 +553,7 @@ class RtcPhone extends EventEmitter {
 
   // Callback function for SIP Stacks
   onSipEventStack(e /*SIPml.Stack.Event*/) {
-    Log.info("==stack event = " + e.type);
+    Log.info("==stack event = " + e.type,  e);
     switch (e.type) {
       case "started": {
         // catch exception for IE (DOM not ready)
@@ -600,7 +600,7 @@ class RtcPhone extends EventEmitter {
       }
 
       case "i_new_call": {
-        Log.info("==i_new_call_log = " + this.sipSessionCall);
+        Log.info("==i_new_call_log = ", this.sipSessionCall);
         if (this.sipSessionCall) {
           // do not accept the incoming call if we're already 'in call'
           e.newSession.hangup(); // comment this line for multi-line support
@@ -612,9 +612,8 @@ class RtcPhone extends EventEmitter {
 
           this.startRingTone();
 
-          let remoteNumber =
-            this.sipSessionCall.getRemoteFriendlyName() || "unknown";
-          Log.info("Incoming call from " + remoteNumber);
+          let remoteNumber = this.sipSessionCall.getRemoteFriendlyName() || "unknown";
+          Log.info("Incoming call from " + remoteNumber, this.sipSessionCall.info);
           this.emit("ringing", remoteNumber);
         }
         break;
@@ -641,7 +640,7 @@ class RtcPhone extends EventEmitter {
    * @param {SIPml.Session.Event} e SIPml.Session.Event
    */
   onSipEventSession(e) {
-    Log.info("==session event = " + e.type, e.description);
+    Log.info("==session event = " + e.type, e);
 
     switch (e.type) {
       case "connecting": {
@@ -730,7 +729,7 @@ class RtcPhone extends EventEmitter {
             this.callStatus = "dialing";
 
             // FIXME: 使用对方铃声，呼叫开始阶段会有一段没有铃声
-            this.startRingbackTone();
+            // this.startRingbackTone();
 
             this.emit("dialing", e);
             Log.info("Remote ringing...");
