@@ -1,6 +1,6 @@
 {
   "name": "rtc-phone",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "hl95 WebRTC phone",
   "keywords": [
     "VoIP",
@@ -39,5 +39,18 @@
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
-  ]
+  ],
+  "main": "src/index.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/95ykf/RtcPhone.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/95ykf/RtcPhone/issues"
+  },
+  "homepage": "https://github.com/95ykf/RtcPhone#readme"
 }
