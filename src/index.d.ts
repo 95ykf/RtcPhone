@@ -1,5 +1,7 @@
 /// <reference lib="dom"/>
 
+import { CallType } from "./types";
+
 declare class RtcPhone {
   constructor(options: RtcPhone.Options);
 
@@ -19,6 +21,18 @@ declare class RtcPhone {
   sipRegister(options: RtcPhone.RegisterOptions): void;
 
   /**
+   * makes a call (SIP INVITE)
+   * @param type 呼叫类型
+   * @param phoneNumber 电话号码
+   */
+  sipCall(type: CallType, phoneNumber: string): void;
+
+  /**
+   * sip answer
+   */
+  sipAnswer(): void;
+
+  /**
    * 工具库
    */
   static utils: {
@@ -35,6 +49,11 @@ declare class RtcPhone {
     firstUpperCase(str: string): any;
     trim(str: string): any;
   };
+
+  /**
+   * 日志工具
+   */
+  Log: Log;
 }
 
 declare namespace RtcPhone {
@@ -111,6 +130,7 @@ declare namespace RtcPhone {
     websocketProxyUrl?: string;
   }
 }
+
 
 declare class Log {
   /**
