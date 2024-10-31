@@ -1,6 +1,6 @@
 {
-  "name": "RtcPhone",
-  "version": "1.0.0",
+  "name": "rtc-phone",
+  "version": "1.0.1",
   "description": "hl95 WebRTC phone",
   "keywords": [
     "VoIP",
