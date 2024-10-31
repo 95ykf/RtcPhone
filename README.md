@@ -88,3 +88,8 @@ npm run build:dev
 
 ### 低版本浏览器兼容插件
 https://github.com/webrtcHacks/adapter
+
+### 参考文档
+https://xueqing.github.io/blog/webrtc/sip/sipml5
+sipml guide: https://www.doubango.org/sipml5/docgen/index.html?svn=252
+SDK API: https://www.doubango.org/sipml5/docgen/symbols/SIPml.html
