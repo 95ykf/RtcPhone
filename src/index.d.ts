@@ -39,13 +39,13 @@ declare class RtcPhone {
 
 declare namespace RtcPhone {
   interface Options {
-    debugLevel: string;
-    webRtcType: string;
-    pfs: number;
-    maxVideoSize: string;
-    maxBandwidthUp: number;
-    maxBandwidthDown: number;
-    zeroArtifacts: boolean;
+    debugLevel?: string;
+    webRtcType?: string;
+    pfs?: number;
+    maxVideoSize?: string;
+    maxBandwidthUp?: number;
+    maxBandwidthDown?: number;
+    zeroArtifacts?: boolean;
     startNativeDebug?: boolean;
 
     ringToneDom?: HTMLAudioElement;
