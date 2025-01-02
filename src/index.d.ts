@@ -21,6 +21,11 @@ declare class RtcPhone {
   sipRegister(options: RtcPhone.RegisterOptions): void;
 
   /**
+   * 取消SIP注册
+   */
+  sipUnRegister(): void;
+
+  /**
    * makes a call (SIP INVITE)
    * @param type 呼叫类型
    * @param phoneNumber 电话号码
@@ -50,10 +55,32 @@ declare class RtcPhone {
     trim(str: string): any;
   };
 
+  
   /**
-   * 日志工具
+   * 日志打印类，用于用户复写后自定义显示
    */
-  Log: Log;
+  static Log: {
+    /**
+     * 基础日志
+     * @param message 日志消息
+     * @param args
+     */
+    log(message: string, ...args: any[]): void;
+
+    /**
+     * 信息日志
+     * @param message 日志消息
+     * @param args
+     */
+    info(message: string, ...args: any[]): void;
+
+    /**
+     * 错误日志
+     * @param message 日志消息
+     * @param args
+     */
+    error(message: string, ...args: any[]): void;
+  };
 }
 
 declare namespace RtcPhone {
@@ -129,30 +156,6 @@ declare namespace RtcPhone {
     realm: string;
     websocketProxyUrl?: string;
   }
-}
-
-
-declare class Log {
-  /**
-   * 基础日志
-   * @param message 日志消息
-   * @param args
-   */
-  static log(message: string, ...args: string[]): void;
-
-  /**
-   * 信息日志
-   * @param message 日志消息
-   * @param args
-   */
-  static info(message: string, ...args: string[]): void;
-
-  /**
-   * 错误日志
-   * @param message 日志消息
-   * @param args
-   */
-  static error(message: string, ...args: string[]): void;
 }
 
 export = RtcPhone;
