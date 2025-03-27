@@ -227,6 +227,7 @@ class RtcPhone extends EventEmitter {
     password = "",
     realm = "",
     websocketProxyUrl = "wss://rtc.95ykf.com:4443",
+    enableRtcwebBreaker = false,
   }) {
     if (this.status === "uninitialized") {
       Log.error("RtcPhone uninitialized!");
@@ -249,6 +250,7 @@ class RtcPhone extends EventEmitter {
       this.privateIdentity = privateIdentity;
       this.publicIdentity = publicIdentity;
       this.websocketProxyUrl = websocketProxyUrl;
+      this.enableRtcwebBreaker = enableRtcwebBreaker;
 
       // enable notifications if not already done
       if (
@@ -282,11 +284,7 @@ class RtcPhone extends EventEmitter {
             )
           : null,
         ice_servers: [],
-        enable_rtcweb_breaker: window.localStorage
-          ? window.localStorage.getItem(
-              "org.doubango.expert.enable_rtcweb_breaker"
-            ) == "true"
-          : false,
+        enable_rtcweb_breaker: this.enableRtcwebBreaker,
         events_listener: {
           events: "*",
           listener: this.onSipEventStack.bind(this),
