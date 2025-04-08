@@ -604,15 +604,23 @@ class RtcPhone extends EventEmitter {
           e.newSession.hangup(); // comment this line for multi-line support
         } else {
           this.sipSessionCall = e.newSession;
-          // start listening for events
-          this.sipSessionCall.setConfiguration(this.configCall);
-          this.callStatus = "ringing";
+          let ao_headers = e.o_event.get_message().ao_headers;
+          let callInfo = ao_headers.find((h) => h.s_name === "Call-Info");
+          // 自动接听
+          if (callInfo && callInfo.s_value === "answer-after=0") {
+            Log.info("CTI发起外呼自动接听");
+            this.sipSessionCall.accept(this.configCall);
+          } else {
+            // start listening for events
+            this.sipSessionCall.setConfiguration(this.configCall);
+            this.callStatus = "ringing";
 
-          this.startRingTone();
+            this.startRingTone();
 
-          let remoteNumber = this.sipSessionCall.getRemoteFriendlyName() || "unknown";
-          Log.info("Incoming call from " + remoteNumber, this.sipSessionCall.info);
-          this.emit("ringing", remoteNumber);
+            let remoteNumber = this.sipSessionCall.getRemoteFriendlyName() || "unknown";
+            Log.info("Incoming call from " + remoteNumber, this.sipSessionCall);
+            this.emit("ringing", remoteNumber);
+          }          
         }
         break;
       }
