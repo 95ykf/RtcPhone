@@ -116,8 +116,10 @@ class RtcPhone extends EventEmitter {
     this.sipStack = null;
     // 注册对象
     this.sipSessionRegister = null;
-    // 呼叫会话数据
+    // 主会话
     this.sipSessionCall = null;
+    // 转接呼叫会话
+    this.sipSessionTransferCallByCti = null;
     this.status = "uninitialized";
 
     // add event listener
@@ -585,6 +587,7 @@ class RtcPhone extends EventEmitter {
         this.sipStack = null;
         this.sipSessionRegister = null;
         this.sipSessionCall = null;
+        this.sipSessionTransferCallByCti = null;
 
         this.emit("disconnected");
 
@@ -599,13 +602,20 @@ class RtcPhone extends EventEmitter {
 
       case "i_new_call": {
         Log.info("==i_new_call_log = ", this.sipSessionCall);
+        let ao_headers = e.o_event.get_message().ao_headers;
+        let callInfo = ao_headers.find((h) => h.s_name === "Call-Info");
         if (this.sipSessionCall) {
-          // do not accept the incoming call if we're already 'in call'
-          e.newSession.hangup(); // comment this line for multi-line support
+          // 如果已经存在通话，新增通话时为转接振铃，需自动接听
+          if (callInfo && callInfo.s_value === "answer-after=0") {
+            this.sipSessionTransferCallByCti = e.newSession;
+            Log.info("CTI转接呼叫自动接听");
+            this.sipSessionTransferCallByCti.accept(this.configCall);
+          } else {
+            // do not accept the incoming call if we're already 'in call'
+            e.newSession.hangup(); // comment this line for multi-line support
+          }
         } else {
           this.sipSessionCall = e.newSession;
-          let ao_headers = e.o_event.get_message().ao_headers;
-          let callInfo = ao_headers.find((h) => h.s_name === "Call-Info");
           // 自动接听
           if (callInfo && callInfo.s_value === "answer-after=0") {
             Log.info("CTI发起外呼自动接听");
@@ -677,6 +687,7 @@ class RtcPhone extends EventEmitter {
           this.status = e.type;
 
           this.sipSessionCall = null;
+          this.sipSessionTransferCallByCti = null;
           this.sipSessionRegister = null;
 
           this.emit("disconnected");
@@ -687,6 +698,8 @@ class RtcPhone extends EventEmitter {
           this.stopRingTone();
 
           this.emit("released", e);
+        } else if (e.session == this.sipSessionTransferCallByCti) {
+          this.sipSessionTransferCallByCti = null;
         }
         break;
       } // 'terminating' | 'terminated'
